@@ -3,7 +3,6 @@ package org.example.product_service.service;
 import org.example.product_service.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.UUID;
 
 public interface ProductService {
@@ -14,13 +13,7 @@ public interface ProductService {
 
     Product getProduct(UUID id);
 
-    Product getProductBySku(String sku);
-
-    Page<Product> listProducts(Pageable page);
-
-    Page<Product> listActiveProducts(Pageable page);
+    Page<Product> listProducts(Pageable pageable);
 
     void deactivateProduct(UUID id);
-
-    Product sa();
 }

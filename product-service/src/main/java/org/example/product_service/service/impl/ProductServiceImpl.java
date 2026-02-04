@@ -1,7 +1,6 @@
 package org.example.product_service.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.example.product_service.domain.Product;
 import org.example.product_service.domain.ProductStatus;
 import org.example.product_service.repository.ProductRepository;
@@ -14,21 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
 
+    public ProductServiceImpl(ProductRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     @Transactional
     public Product createProduct(Product product) {
-        if (repository.existsBySku(product.getSku())) {
-            throw new IllegalArgumentException("SKU already exists.");
-        }
-        if (product.getPrice().signum() < 0) {
-            throw new IllegalArgumentException("Price cannot be negative.");
-        }
         product.setStatus(ProductStatus.ACTIVE);
         return repository.save(product);
     }
@@ -36,16 +32,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Product updateProduct(UUID id, Product product) {
-        var existing = getProduct(id);
-        if (existing.getStatus() == ProductStatus.DISCONTINUED) {
-            throw new IllegalArgumentException("Cannot update");
-        }
+        Product existing = getProduct(id);
         existing.setName(product.getName());
         existing.setDescription(product.getDescription());
         existing.setPrice(product.getPrice());
         existing.setBrand(product.getBrand());
         existing.setCategory(product.getCategory());
-
         return repository.save(existing);
     }
 
@@ -56,24 +48,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductBySku(String sku) {
-        return repository.findBySku(sku)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    public Page<Product> listProducts(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public Page<Product> listProducts(Pageable page) {
-        return repository.findAll(page);
-    }
-
-    @Override
-    public Page<Product> listActiveProducts(Pageable page) {
-        return repository.findByStatus(ProductStatus.ACTIVE, page);
-    }
-
-    @Override
+    @Transactional
     public void deactivateProduct(UUID id) {
-        var p = getProduct(id);
+        Product p = getProduct(id);
         p.setStatus(ProductStatus.INACTIVE);
         repository.save(p);
     }

@@ -1,30 +1,28 @@
 package org.example.product_service.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.Instant;
 import java.util.UUID;
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
 public class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
+    private Instant updatedAt = Instant.now();
 
-    private Instant updatedAt;
+    public UUID getId() {
+        return id;
+    }
 
-    @Version
-    private long version;
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
-
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 }
