@@ -8,7 +8,7 @@ Microservices that can be designed as part of a large e-commerce application:
 ## Product Catalog Service
 
 ### Overview
-
+ 
 Responsible for managing product catalog data, which is used by customers and other services.
 
 Reponsibilities:
